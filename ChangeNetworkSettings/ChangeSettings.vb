@@ -17,7 +17,7 @@ Module ChangeSettings
         Dim oldSettings As StreamReader = current.StandardOutput()
         current.WaitForExit()
         Dim IPAddress As New StringBuilder()
-        Console.WriteLine(oldSettings.ReadToEnd.ToString())
+        Console.WriteLine(oldSettings.ReadToEnd.ToString()) 'Probably need to send this to CharacterArray to step through \t's, etc.
 
         Console.WriteLine("C'est finis.")
         Console.ReadKey()
