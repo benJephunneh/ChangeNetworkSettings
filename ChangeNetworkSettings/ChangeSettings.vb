@@ -14,10 +14,26 @@ Module ChangeSettings
         current.StartInfo.RedirectStandardOutput = True
         current.Start()
 
-        Dim oldSettings As StreamReader = current.StandardOutput()
+        'Dim netshOutput As StreamReader = current.StandardOutput()
+        Dim oldSettings() As String = current.StandardOutput.ReadToEnd.ToString.Split(vbCrLf)
         current.WaitForExit()
-        Dim IPAddress As New StringBuilder()
-        Console.WriteLine(oldSettings.ReadToEnd.ToString()) 'Probably need to send this to CharacterArray to step through \t's, etc.
+
+        Dim IPAddress As StringBuilder
+        For Each line As String In oldSettings
+            If line.Contains("IP Address") Then
+                Dim index As Integer
+                For Each letter As Char In line
+                    If Integer.TryParse(letter, index) Then
+                        index = InStr(line, index)
+                        Exit For
+                    End If
+                Next
+
+            ElseIf line.Contains("mask") Then
+
+            End If
+        Next
+        'Console.WriteLine(oldSettings.ReadToEnd.ToString()) 'Probably need to send this to CharacterArray to step through \t's, etc.
 
         Console.WriteLine("C'est finis.")
         Console.ReadKey()
