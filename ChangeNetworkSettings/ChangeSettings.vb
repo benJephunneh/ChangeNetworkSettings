@@ -9,11 +9,12 @@ Module ChangeSettings
 
         Dim current As New Process()
         current.StartInfo.FileName = "netsh"
-        current.StartInfo.Arguments = "interface ip show address ""Local Area Connection"""
+        current.StartInfo.Arguments = "interface ip show address ""Ethernet"""
         current.StartInfo.UseShellExecute = False
         current.StartInfo.RedirectStandardOutput = True
         current.Start()
 
+<<<<<<< HEAD
         'Dim netshOutput As StreamReader = current.StandardOutput()
         Dim oldSettings() As String = current.StandardOutput.ReadToEnd.ToString.Split(vbCrLf)
         current.WaitForExit()
@@ -34,6 +35,38 @@ Module ChangeSettings
             End If
         Next
         'Console.WriteLine(oldSettings.ReadToEnd.ToString()) 'Probably need to send this to CharacterArray to step through \t's, etc.
+=======
+        Dim oldSettings As StreamReader = current.StandardOutput() '.ReadToEnd.ToString.Split(vbCrLf)
+        current.WaitForExit()
+        Dim output As String() = current.StandardOutput.ReadToEnd.Split(vbCrLf)
+        Dim IPAddress As New StringBuilder
+        Dim SubnetMask As New StringBuilder
+        Dim Gateway As New StringBuilder
+
+        For Each line In output
+            If line.Contains("IP Address") Then
+                Dim index As Integer = InStr(line, ".") - 4
+                For i As Integer = index To line.Count() - 1
+                    IPAddress.Append(line(i))
+                Next
+                Console.WriteLine(IPAddress)
+            ElseIf line.Contains("mask")
+                Dim index As Integer = InStr(line, "mask") + 4
+                For i As Integer = index To line.Count() - 1
+                    If line(i) <> ")" Then
+                        SubnetMask.Append(line(i))
+                    End If
+                Next
+                Console.WriteLine(SubnetMask)
+            ElseIf line.Contains("Default Gateway")
+                Dim index As Integer = InStr(line, ".") - 4
+                For i As Integer = index To line.Count() - 1
+                    Gateway.Append(line(i))
+                Next
+                Console.WriteLine(Gateway)
+            End If
+        Next
+>>>>>>> origin/master
 
         Console.WriteLine("C'est finis.")
         Console.ReadKey()
