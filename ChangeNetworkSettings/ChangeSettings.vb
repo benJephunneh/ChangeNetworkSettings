@@ -12,6 +12,7 @@ Module ChangeSettings
 
     Sub Main()
 
+        'Create a netsh process to get current network settings for the Local Area Connection.
         Dim current As New Process()
         current.StartInfo.FileName = "netsh"
         'current.StartInfo.Arguments = "interface ip show address ""Ethernet"""
@@ -20,7 +21,7 @@ Module ChangeSettings
         current.StartInfo.RedirectStandardOutput = True
         current.Start()
 
-        'Dim oldSettings As StreamReader = current.StandardOutput()
+        'Wait for the process to finish, then put output stream into a string.
         current.WaitForExit()
         output = current.StandardOutput.ReadToEnd.Split(vbCrLf)
 
@@ -120,11 +121,11 @@ Module ChangeSettings
 End Module
 
 Friend Class AddressChange
-    Inherits NetworkInterface
+    Inherits NetworkInterface 'We'll see if this inheritance is necessary.
 
-    Private InterfaceIP As StringBuilder
-    Private SubnetMask As StringBuilder
-    Private Gateway As StringBuilder
+    Private _InterfaceIP As StringBuilder
+    Private _SubnetMask As StringBuilder
+    Private _Gateway As StringBuilder
 
     Private _HostName As String
     'Private _OldIpAddress As IPAddress
@@ -139,23 +140,23 @@ Friend Class AddressChange
         For Each line In output
             'ExtractAddress(output, "IP Address", line, IPAddress)
             If line.Contains("IP Address") Then
-                InterfaceIP = New StringBuilder
-                ExtractAddress(line, InterfaceIP)
+                _InterfaceIP = New StringBuilder
+                ExtractAddress(line, _InterfaceIP)
 
             ElseIf line.Contains("mask") Then
-                SubnetMask = New StringBuilder
+                _SubnetMask = New StringBuilder
                 Dim index As Integer = InStr(line, "mask") + 4
                 For i As Integer = index To line.Count() - 1
-                    SubnetMask.Append(If(line(i) <> ")", line(i), Nothing))
+                    _SubnetMask.Append(If(line(i) <> ")", line(i), Nothing))
                     'If line(i) = ")" Then
                     '    Exit For
                     'End If
                 Next
-                Console.WriteLine(SubnetMask)
+                Console.WriteLine(_SubnetMask)
 
             ElseIf line.Contains("Default Gateway") Then
-                Gateway = New StringBuilder
-                ExtractAddress(line, Gateway)
+                _Gateway = New StringBuilder
+                ExtractAddress(line, _Gateway)
                 Exit For
             End If
         Next
